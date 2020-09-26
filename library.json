@@ -25,8 +25,6 @@
   "license": "MIT",
   "homepage": "https://www.helloworld.org/",
   "dependencies": {
-    "Adafruit Unified Sensor": "^1.1.4",
-    "Adafruit BME680 Library": "^1.1.1",
     "ArduinoJson": "^6.15.2"
   },
   "frameworks": "*",
