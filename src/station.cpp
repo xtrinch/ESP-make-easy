@@ -1,7 +1,5 @@
 #include "station.h"
 
-HTTPClient http;
-
 bool setupWiFi() {
   int wifiRetriesLeft = WIFI_CONNECT_RETRIES;
 
@@ -32,13 +30,13 @@ bool setupWiFi() {
   
   ardprintf("Station: Connected to WiFi");
 
-  http.begin("http://" + String(CFG_SENSOR_DASHBOARD_URL) + "/api/measurements/multi");
   return true;
 }
 
 bool makeNetworkRequest(const char * url, const char * authorization, const char * content) {
   HTTPClient http;
   http.begin(url);
+
   http.addHeader("Content-Type", "application/json");
   http.addHeader("Accept", "application/json");
   http.addHeader("Authorization", authorization);
