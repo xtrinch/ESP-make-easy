@@ -40,6 +40,7 @@ bool makeNetworkRequest(const char * url, const char * authorization, const char
   http.addHeader("Content-Type", "application/json");
   http.addHeader("Accept", "application/json");
   http.addHeader("Authorization", authorization);
+  http.addHeader("Forwarder", CFG_ACCESS_TOKEN);
   int httpResponseCode = http.POST(content);
 
   if (httpResponseCode > 0) {
