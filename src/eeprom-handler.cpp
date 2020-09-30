@@ -39,6 +39,10 @@ bool readFromEEPROM(char * buf, const char * name) {
 }
 
 bool isConfigSaved() {
+  if (PRECONFIGURED) {
+    return true;
+  }
+
   char magicString[60];
   readFromEEPROM(magicString, "magic_string");
 
