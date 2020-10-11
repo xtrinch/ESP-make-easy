@@ -53,7 +53,7 @@ bool makeSecureNetworkRequest(const char * url, const char * authorization, cons
   int httpResponseCode = http.POST(content);
 
   if (httpResponseCode > 0) {
-    ardprintf("Station: HTTP Response code: %d", httpResponseCode);
+    ardprintf("Station: HTTPS Response code: %d", httpResponseCode);
     const char * payload = http.getString().c_str();
     ardprintf("%s", payload);
     http.end();
