@@ -33,6 +33,41 @@ bool setupWiFi() {
   return true;
 }
 
+bool makeSecureNetworkRequest(const char * url, const char * authorization, const char * content) {
+  WiFiClientSecure client;
+  #ifdef ESP32
+    client.setCACert((const char *)certificate_start);
+  #else
+    client.setInsecure();
+  #endif
+  client.connect(url, 443);
+
+  HTTPClient http;
+
+  http.begin(client, url);
+
+  http.addHeader("Content-Type", "application/json");
+  http.addHeader("Accept", "application/json");
+  http.addHeader("Authorization", authorization);
+  http.addHeader("Forwarder", CFG_ACCESS_TOKEN);
+  int httpResponseCode = http.POST(content);
+
+  if (httpResponseCode > 0) {
+    ardprintf("Station: HTTP Response code: %d", httpResponseCode);
+    const char * payload = http.getString().c_str();
+    ardprintf("%s", payload);
+    http.end();
+    return true;
+  }
+  else {
+    http.end();
+    ardprintf("Station: Error code: %d", httpResponseCode);
+    return false;
+  }
+
+  return false;
+}
+
 bool makeNetworkRequest(const char * url, const char * authorization, const char * content) {
   HTTPClient http;
   http.begin(url);

@@ -18,5 +18,6 @@
 
 bool setupWiFi();
 bool makeNetworkRequest(const char * url, const char * authorization, const char * content);
+bool makeSecureNetworkRequest(const char * url, const char * authorization, const char * content);
 
 #endif
