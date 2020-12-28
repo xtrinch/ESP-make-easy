@@ -33,7 +33,7 @@ bool setupWiFi() {
   return true;
 }
 
-bool makeSecureNetworkRequest(const char * url, const char * authorization, const char * content) {
+bool makeSecureNetworkRequest(const char * url, const char * authorization, const char * content, const char * response, const char * method) {
   WiFiClientSecure client;
   #ifdef ESP32
     client.setCACert((const char *)certificate_start);
@@ -50,12 +50,20 @@ bool makeSecureNetworkRequest(const char * url, const char * authorization, cons
   http.addHeader("Accept", "application/json");
   http.addHeader("Authorization", authorization);
   http.addHeader("Forwarder", CFG_ACCESS_TOKEN);
-  int httpResponseCode = http.POST(content);
+  int httpResponseCode = -1;
+  if (strcmp(method, "POST") == 0) {
+    httpResponseCode = http.POST(content);
+  } else {
+    httpResponseCode = http.GET();
+  }
 
   if (httpResponseCode > 0) {
     ardprintf("Station: HTTPS Response code: %d", httpResponseCode);
     const char * payload = http.getString().c_str();
     ardprintf("%s", payload);
+    if (response != NULL) {
+      strcpy((char *)response, payload);
+    }
     http.end();
     return true;
   }
