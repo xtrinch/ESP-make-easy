@@ -17,7 +17,7 @@
 #define WIFI_CONNECT_RETRIES 50
 
 bool setupWiFi();
-bool makeNetworkRequest(const char * url, const char * authorization, const char * content);
+bool makeNetworkRequest(const char * url, const char * authorization, const char * content, const char * response, const char * method);
 bool makeSecureNetworkRequest(const char * url, const char * authorization, const char * content, const char * response, const char * method);
 
 #endif

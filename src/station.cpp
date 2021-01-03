@@ -76,7 +76,7 @@ bool makeSecureNetworkRequest(const char * url, const char * authorization, cons
   return false;
 }
 
-bool makeNetworkRequest(const char * url, const char * authorization, const char * content) {
+bool makeNetworkRequest(const char * url, const char * authorization, const char * content, const char * response, const char * method) {
   HTTPClient http;
   http.begin(url);
 
@@ -84,12 +84,21 @@ bool makeNetworkRequest(const char * url, const char * authorization, const char
   http.addHeader("Accept", "application/json");
   http.addHeader("Authorization", authorization);
   http.addHeader("Forwarder", CFG_ACCESS_TOKEN);
-  int httpResponseCode = http.POST(content);
+
+  int httpResponseCode;
+  if (strcmp(method, "POST") == 0) {
+    httpResponseCode = http.POST(content);
+  } else {
+    httpResponseCode = http.GET();
+  }
 
   if (httpResponseCode > 0) {
     ardprintf("Station: HTTP Response code: %d", httpResponseCode);
     const char * payload = http.getString().c_str();
-    ardprintf("%s", payload);
+    // ardprintf("%s", payload);
+    if (response != NULL) {
+      strcpy((char *)response, payload);
+    }
     http.end();
     return true;
   }
