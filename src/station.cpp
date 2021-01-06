@@ -14,12 +14,10 @@ bool setupWiFi() {
   #endif
 
   WiFi.begin(ssid, password);
+  ardprintf("Station: Connecting with %s:%d", ssid, password);
 
   while (WiFi.status() != WL_CONNECTED && wifiRetriesLeft > 0) {
-    delay(500);
-    ardprintf("Station: Connecting with SSID %s", ssid);
-    ardprintf("Station: Connecting with password %s", password);
-
+    delay(100);
     wifiRetriesLeft -= 1;
   }
 
@@ -33,15 +31,21 @@ bool setupWiFi() {
   return true;
 }
 
-bool makeSecureNetworkRequest(const char * url, const char * authorization, const char * content, const char * response, const char * method) {
+bool makeSecureNetworkRequest(const char * url, const char * authorization, const char * content, const char * response, const char * method, const char * certificate) {
   WiFiClientSecure client;
-  #ifdef ESP32
-    client.setCACert((const char *)certificate_start);
-  #else
-    client.setInsecure();
-  #endif
-  client.connect(url, 443);
+  if (!certificate) {
+    #ifndef ESP32S2
+    #ifdef ESP32
+      client.setCACert((const char *)certificate_start);
+    #elif defined ESP8266
+      client.setInsecure();
+    #endif
+    #endif
+  } else {
+    client.setCACert((const char *)certificate);
+  }
 
+  client.connect(url, 443);
   HTTPClient http;
 
   http.begin(client, url);
@@ -58,9 +62,9 @@ bool makeSecureNetworkRequest(const char * url, const char * authorization, cons
   }
 
   if (httpResponseCode > 0) {
-    ardprintf("Station: HTTPS Response code: %d", httpResponseCode);
+    ardprintf("Station: HTTPS %d", httpResponseCode);
     const char * payload = http.getString().c_str();
-    ardprintf("%s", payload);
+    // ardprintf("%s", payload);
     if (response != NULL) {
       strcpy((char *)response, payload);
     }
@@ -93,7 +97,7 @@ bool makeNetworkRequest(const char * url, const char * authorization, const char
   }
 
   if (httpResponseCode > 0) {
-    ardprintf("Station: HTTP Response code: %d", httpResponseCode);
+    ardprintf("Station: HTTP %d", httpResponseCode);
     const char * payload = http.getString().c_str();
     // ardprintf("%s", payload);
     if (response != NULL) {

@@ -23,8 +23,11 @@
 #define CFG_PING_URL xstr(PING_URL)
 #define CFG_ACCESS_TOKEN xstr(ACCESS_TOKEN)
 #define CFG_CERTIFICATE xstr(CERTIFICATE)
+
+#ifndef ESP32S2
 extern const uint8_t certificate_start[] asm("_binary_certificate_cer_start");
 extern const uint8_t certificate_end[] asm("_binary_certificate_cer_end");
+#endif
 
 void ardprintf(const char *str, ...);
 void append(char* s, char c);

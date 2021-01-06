@@ -1,7 +1,7 @@
 #include "sleep.h"
 
 void goToSleep() {
-  ardprintf("Sleep: Setup ESP32 to sleep for every %d seconds ", CFG_SLEEP_SECONDS);
+  ardprintf("Sleep: Every %d sec", CFG_SLEEP_SECONDS);
 
   #ifdef ESP32
   esp_sleep_enable_timer_wakeup(CFG_SLEEP_SECONDS * uS_TO_S_FACTOR);
