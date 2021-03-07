@@ -7,6 +7,10 @@ void append(char* s, char c) {
 }
 
 void ardprintf(const char *fmt, ...) {
+  #ifndef DEBUG
+  return;
+  #endif
+
   char buf[128]; // resulting string limited to 128 chars
   va_list args;
   va_start(args, fmt);
