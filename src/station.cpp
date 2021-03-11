@@ -64,7 +64,7 @@ bool makeSecureNetworkRequest(const char * url, const char * authorization, cons
   if (httpResponseCode > 0) {
     ardprintf("Station: HTTPS %d", httpResponseCode);
     const char * payload = http.getString().c_str();
-    // ardprintf("%s", payload);
+    ardprintf("%s", payload);
     if (response != NULL) {
       strcpy((char *)response, payload);
     }
