@@ -4,6 +4,6 @@
 #include <Arduino.h>
 #include "common.h"
 
-void goToSleep();
+void goToSleep(int secondsToSleep = CFG_SLEEP_SECONDS);
 
 #endif

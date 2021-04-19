@@ -13,6 +13,10 @@ int getEEPROMAddress(const char * name) {
     return MAGIC_STRING_ADDRESS;
   } else if (strcmp(name, "access_token") == 0) {
     return SENSOR_ACCESS_TOKEN_ADDRESS;
+  } else if (strcmp(name, "time_between_measurements") == 0) {
+    return TIME_BETWEEN_MEASUREMENTS_ADDRESS;
+  } else if (strcmp(name, "max_rtc_records") == 0) {
+    return MAX_RTC_RECORDS_ADDRESS;
   }
 
   return -1;
@@ -38,6 +42,19 @@ bool readFromEEPROM(char * buf, const char * name) {
   return true;
 }
 
+uint8_t readIntFromEEPROM(const char * name) {
+  int addr = getEEPROMAddress(name);
+  if (addr < 0) {
+    ardprintf("EEPROM: Could not read unknown value %s", name);
+    return false;
+  }
+
+  char ch = (uint8_t)EEPROM.read(addr);
+
+  ardprintf("EEPROM: read %s: %d", name, ch);
+  return ch;
+}
+
 bool isConfigSaved() {
   #ifdef PRECONFIGURED
     return true;
@@ -59,8 +76,15 @@ bool clearConfig() {
   return saveToEEPROM("magic_string", "");
 }
 
-bool saveConfig(const char * ssid, const char * password, const char * sensorAccessToken) {
+bool saveConfig(
+  const char * ssid, 
+  const char * password, 
+  const char * sensorAccessToken,
+  uint8_t timeBetweenMeasurements, // min
+  uint8_t maxRtcRecords // how many records before they are sent to server
+) {
   if (!ssid || strlen(ssid) == 0 || !password || strlen(password) == 0) {
+    ardprintf("Need SSID & password to save config");
     return false;
   }
   
@@ -70,8 +94,11 @@ bool saveConfig(const char * ssid, const char * password, const char * sensorAcc
     !saveToEEPROM("ssid", ssid) ||
     !saveToEEPROM("password", password) ||
     !saveToEEPROM("access_token", sensorAccessToken) ||
+    !saveIntToEEPROM("time_between_measurements", timeBetweenMeasurements) ||
+    !saveIntToEEPROM("max_rtc_records", maxRtcRecords) ||
     !saveToEEPROM("magic_string", xstr(MAGIC_STRING))
   ) {
+    ardprintf("Could not save some config data to EEPROM");
     retVal = false;
   }
 
@@ -99,5 +126,26 @@ bool saveToEEPROM(const char * name, const char * value) {
   }
 
   ardprintf("EEPROM: Saved variable %s with value %s", name, value);
+  return true;
+}
+
+bool saveIntToEEPROM(const char * name, uint8_t value) { 
+  int addr = getEEPROMAddress(name);
+
+  if (addr < 0) {
+    ardprintf("EEPROM: Unknown address for %s", name);
+    return false;
+  }
+ 
+  EEPROM.write(addr, (char)value);
+
+  bool success = EEPROM.commit(); 
+
+  if (!success) {
+    ardprintf("EEPROM: Could not save");
+    return false;
+  }
+
+  ardprintf("EEPROM: Saved variable %s with value %d", name, value);
   return true;
 }

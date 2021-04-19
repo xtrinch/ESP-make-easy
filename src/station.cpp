@@ -31,7 +31,7 @@ bool setupWiFi() {
   return true;
 }
 
-bool makeSecureNetworkRequest(const char * url, const char * authorization, const char * content, const char * response, const char * method, const char * certificate) {
+int makeSecureNetworkRequest(const char * url, const char * authorization, const char * content, const char * response, const char * method, const char * certificate) {
   WiFiClientSecure client;
   if (!certificate) {
     #ifndef ESP32S2
@@ -69,15 +69,13 @@ bool makeSecureNetworkRequest(const char * url, const char * authorization, cons
       strcpy((char *)response, payload);
     }
     http.end();
-    return true;
   }
   else {
     http.end();
     ardprintf("Station: Error code: %d", httpResponseCode);
-    return false;
   }
 
-  return false;
+  return httpResponseCode;
 }
 
 bool makeNetworkRequest(const char * url, const char * authorization, const char * content, const char * response, const char * method) {

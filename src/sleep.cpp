@@ -5,11 +5,11 @@
 #include <esp_sleep.h>
 
 
-void goToSleep() {
-  ardprintf("Sleep: Every %d sec", CFG_SLEEP_SECONDS);
+void goToSleep(int secondsToSleep) {
+  ardprintf("Sleep: Every %d sec", secondsToSleep);
 
   #ifdef ESP32
-  esp_sleep_enable_timer_wakeup(CFG_SLEEP_SECONDS * uS_TO_S_FACTOR);
+  esp_sleep_enable_timer_wakeup(secondsToSleep * uS_TO_S_FACTOR);
   // shut practically everything off
   // esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
   // esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
